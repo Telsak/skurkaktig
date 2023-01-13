@@ -1,1 +1,2 @@
 # this is a .gitignore file
+./__pycache__/*

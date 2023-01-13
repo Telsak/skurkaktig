@@ -2,24 +2,27 @@
    ╒══════════════════╕ ╓─ ──── ─ ──══── ─ ────── ─ ────── ─ ──══── ─ ──── ─┐ 
  ┌─┤▌  RELEASE INFO  ▐├─╜ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ └┐
  █ ╘══════════════════╛                                                      █
- █   [ Filename ................................................ main.py ]   █
- █   [ Type .................................. main file for skurkaktigt ]   █
+ █   [ Filename ............................................. classes.py ]   █
+ █   [ Type .......................................... Character classes ]   █
  █                                                                           █
  █             [ Written by ........................... telsak ]             █
  █             [ Created date ................... Jan 13, 2023 ]             █
  └┐ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ┌┘
   └ ──── ─ ──══── ─ ────── ─ ───── ─ ──══── ─ ──── ─ ────── ─ ──══── ─ ──── ┘
 '''
-from dice import Dice
-from entity import Entity, Player
-from classes import Fighter
-from races import Dwarf
+class Fighter:
+    def __init__(self) -> None:
+        self._name = 'Fighter'
+        self._level = 1
+        self._xp = 0
+        self._hitdie = 10
+        self._proficiency = {
+                'saves': ['str','con'],
+                'weapons': ['simple weapons', 'martial weapons'],
+                'armor': ['All armor', 'shields'],
+                'tools': [],
+                'skills': {'Acrobatics': 'dex', 'Perception': 'wis'}
+                }
 
-def main() -> None:
-    stats = {'str':15,'dex':13,'con':14,'int':10,'wis':12,'cha':8}
-    me = Player('Simon', stats, Fighter(), Dwarf('Mountain'))
-    print(me)
-
-
-if __name__ == "__main__":
-    main()
+    def __str__(self) -> str:
+        return self._name
