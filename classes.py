@@ -21,8 +21,19 @@ class Fighter:
                 'weapons': ['simple weapons', 'martial weapons'],
                 'armor': ['All armor', 'shields'],
                 'tools': [],
-                'skills': {'Acrobatics': 'dex', 'Perception': 'wis'}
+                'skills': {'Acrobatics': 'dex', 'Perception': 'wis'},
+                'style': 'Defense'
                 }
+
+    @property
+    def get_attacks(self) -> int:
+        if 4 < self._level < 11:
+            attacks = 2
+        elif 10 < self._level < 20:
+            attacks = 3
+        elif self._level == 20:
+            attacks = 4
+        return attacks
 
     def __str__(self) -> str:
         return self._name

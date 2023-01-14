@@ -19,6 +19,7 @@ class Dwarf:
         elif subrace == 'Mountain':
             self._stats = {'str':2}
         self._size = 'Medium'
+        self._stats['con'] = 2
 
     def __str__(self) -> str:
         return self._name

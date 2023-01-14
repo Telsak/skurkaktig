@@ -11,6 +11,7 @@
   └ ──── ─ ──══── ─ ────── ─ ───── ─ ──══── ─ ──── ─ ────── ─ ──══── ─ ──── ┘
 '''
 from dice import Dice
+from re import compile
 
 class Entity:
     def __init__(self, name: str) -> None:
@@ -35,6 +36,7 @@ class Entity:
     def is_alive(self) -> bool:
         return self.hp > 0
 
+
 class Player(Entity):
     def __init__(self, name, stats, dndclass, race):
         super().__init__(name)
@@ -42,15 +44,13 @@ class Player(Entity):
         self._stats = stats
         self._race = race
         self._hp = self._maxhp = self._class._hitdie + self.modifier(stats['con'])
-        self._level = 1
-        self._xp = 0
         self._inventory = []
         self._attack = []
 
     def equip_weapon(self, weapon):
         if len(self._attack) > 0:
             self._inventory.append(self._attack)
-            self._attack = weapon
+        self._attack = weapon
  
     def attack(self, target):
         d20 = self.Dice.roll_die(20)
@@ -59,7 +59,7 @@ class Player(Entity):
             print(f'{self._name} hit: {d20 + modifiers} hits {target._name}')
             damage = self.calculate_damage(d20)
             print(f'{self._name} does {damage} to {target._name}')
-            target.hp(-damage)
+            target.hp = -damage
         else:
             if d20 == 1:
                 print(f'{self._name}: Critical miss!')
@@ -92,7 +92,7 @@ class Player(Entity):
     def proficient_roll(self, stat, proficient):
         base, prof = self.Dice.roll_die(20) + self.modifier(self.get_score(stat)), 0
         if proficient:
-            prof += self.proficient_level(self._level)
+            prof += self.proficient_level(self._class._level)
         return base + prof
 
     def ability_check(self, ability, dc):
@@ -108,3 +108,47 @@ class Player(Entity):
 
     def __str__(self):
         return f'Name: {self._name} \nStr: {self.get_score("str")}\nWeapon: {self._attack}'
+
+
+class Monster(Entity):
+    def __init__(self, name, size, armor_class, hp, cr, stats, attack):
+        super().__init__(name)
+        self._name = name
+        self._size = size
+        self._ac = armor_class
+        self._maxhp = self._hp = hp
+        self._cr = cr
+        self._stats = stats
+        self._attack = attack
+
+    def attack(self, target):
+        d20 = self.Dice.roll_die(20)
+        if d20 != 1 and d20 + self._attack['to_hit'] >= target.get_ac():
+            print(f'{self._name} hit: {d20 + self._attack["to_hit"]} hits {target._name}')
+            damage = self.calculate_damage(d20)
+            print(f'{self._name} does {damage} to {target._name}')
+            target.hp = -damage
+        else:
+            if d20 == 1:
+                print('Critical miss!')
+            else:
+                print(f'{self._name} hit: {d20 + self._attack["to_hit"]} misses {target._name} ac: {target.get_ac()}')
+
+    def calculate_damage(self, d20):
+        damage = self._attack['damage']
+        dmg_die = compile(r"(\d+)d(\d+)\+(\d+)")
+        match = dmg_die.match(damage)
+        num, sides, add = [int(group) for group in match.groups()]
+        damage = self.Dice.roll_dice(num, sides)
+        if d20 == 20:
+            print('Critical hit!')
+            damage *= 2 + add
+        else:
+            damage += add
+        return damage
+
+    def get_ac(self):
+        return self._ac
+
+    def __str__(self):
+        return f'Name: {self._name} \nhp: {self.hp}'
